@@ -1,0 +1,168 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <title>Блог о машинном обучении</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    <script type="text/javascript"
+            src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <link href="{% static 'styles/translate.css' %}" rel="stylesheet">
+    <link href="{% static 'styles/translate2.css' %}" type="text/css" rel="stylesheet">
+</head>
+
+<body>
+<div class="g-image"
+    style="background: linear-gradient(90deg, rgba(86,85,106,1) 0%, rgba(182,182,187,1) 67%, rgba(86,85,106,1) 100%); background-size: cover; height: 100vh;">
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div id='google_translate_element'></div>
+            <select id="languageSelector">
+                <option class="languageOption" data-lang="ru">Русский</option>
+                <option class="languageOption" data-lang="en">English</option>
+                <option class="languageOption" data-lang="es">Español</option>
+                <option class="languageOption" data-lang="fr">Français</option>
+            </select>
+            <script>
+                function googleTranslateElementInit() {
+                    new google.translate.TranslateElement({
+                        layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL,
+                        gaTrack: false,
+                        gaId: ''
+                    }, 'google_translate_element');
+                }
+
+                $(document).ready(function () {
+                    $('#languageSelector').change(function () {
+                        var selectedLang = $(this).find(':selected').data('lang');
+                        updateLanguage(selectedLang);
+                    });
+
+                    function updateLanguage(lang) {
+                        var el = document.querySelector("#google_translate_element select");
+                        for (var i = 0; i < el.children.length; i++) {
+                            var option = el.children[i];
+                            if (option.value == lang) {
+                                el.selectedIndex = i;
+                                el.dispatchEvent(new Event('change'));
+                                break;
+                            }
+                        }
+                    }
+                });
+            </script>
+            <div class="container-fluid">
+                <a class="navbar-brand" href="/">Машинное обучение</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Переключатель навигации">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/">Главная</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/about">О блоге</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-bs-toggle="dropdown" aria-expanded="false">
+                                Машинное обучение
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="/stat">Статистические методы классификации</a></li>
+                                <li><a class="dropdown-item" href="/gray">Модели Грея</a></li>
+                                <li>
+                                    <hr class="dropdown-divider">
+                                </li>
+                                <li><a class="dropdown-item" href="/imput">Импутация данных</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Переключатель навигации">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse d-flex justify-content-end align-items-center"
+                     id="navbarSupportedContent">
+                    <form class="d-flex me-3">
+                        <input class="form-control me-2" type="search" placeholder="Поиск" aria-label="Search" name="q">
+                        <button class="btn btn-primary" type="submit">Искать</button>
+                    </form>
+                    {% if not user_authenticated %}
+                        <button type="button" class="btn btn-primary me-3" data-bs-toggle="modal"
+                                data-bs-target="#registrationModal">
+                            Регистрация
+                        </button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            Вход
+                        </button>
+                    {% else %}
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Выход</button>
+                        </form>
+                        <a href="{% url 'user_profile' %}" class="btn btn-primary me-3">Личный кабинет</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div>
+        {% block content %}
+        {% endblock content %}
+        <div class="modal fade" id="registrationModal" tabindex="-1" aria-labelledby="registrationModalLabel"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="registrationModalLabel">Регистрация</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Форма регистрации -->
+                        <!-- В вашем HTML-шаблоне -->
+                        <form method="post" action="{% url 'register' %}">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            <input type="submit" value="Register">
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+                integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4"
+                crossorigin="anonymous"></script>
+    </div>
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="loginModalLabel">Вход</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Форма входа -->
+                    <form method="post" action="{% url 'login' %}">
+                        {% csrf_token %}
+                        <!-- Поля для входа пользователя -->
+                        {{ login_form.as_p }}
+                        <button type="submit" class="btn btn-success">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>
